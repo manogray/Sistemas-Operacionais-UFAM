@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include "myTermColors.h"
 
 char* isolaComando(char comando[200], char resposta[200]){
     int i = 0;
@@ -24,7 +25,7 @@ char* isolaOpcao(char comando[200], char resposta[200], char comandoIsolado[200]
         resposta[j] = comando[i];
         i++;
         j++;
-    }
+    }   
 
     resposta[j] = '\0';
     return resposta;
@@ -37,6 +38,7 @@ void pwd(int op){
     diretorioAtual = NULL;
     diretorioAtual = getcwd(diretorioAtual,0);
     if(op == 0){
+        foreground(VERDE);
         printf("%s\n",diretorioAtual);
     }
 
@@ -50,13 +52,15 @@ void pwd(int op){
         while(diretorioAtual[i] != '\0'){
             printf("%c",diretorioAtual[i]);
             i++;
-        }
+        }  
+        foreground(VERMELHO);
         printf(" $ ");
     }
 }
 
 void cd(char opcao[200]){
     if(chdir(opcao) < 0){
+        foreground(VERMELHO);
         printf("%s: Diretorio nao encontrado\n",opcao);
     }
 }
@@ -77,7 +81,10 @@ int main(int argc, char *argv[]){
 
     while(strcmp(comandoIsolado,"exit") != 0){
         
-        printf("(%s@Computer)",pw->pw_name);
+        foreground(AZUL);
+        printf("[%s@Computer]",pw->pw_name);
+        
+        foreground(VERDE);
         pwd(1);
 
         scanf("%[^\n]s",comando);
