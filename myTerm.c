@@ -55,6 +55,7 @@ void pwd(int op){
         }  
         foreground(VERMELHO);
         printf(" $ ");
+        foreground(VERDE);
     }
 }
 
