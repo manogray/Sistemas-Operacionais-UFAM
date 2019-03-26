@@ -87,6 +87,7 @@ int main(int argc, char *argv[]){
         foreground(VERDE);
         pwd(1);
 
+        foreground(BRANCO);
         scanf("%[^\n]s",comando);
         setbuf(stdin,NULL);
 
@@ -99,6 +100,8 @@ int main(int argc, char *argv[]){
             system("clear");
         }else if (strcmp(comandoIsolado,"pwd") == 0) {
             pwd(0);
+        }else if (strcmp(comandoIsolado,"ls") == 0) {
+            system("ls");
         }else if (strcmp(comandoIsolado,"exit") == 0){
         }else {
             printf("%s: Comando nao encontrado\n", comandoIsolado);
