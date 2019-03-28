@@ -1,6 +1,8 @@
 /* isto é coisa do demônio!
     essa desgraça só funciona no Linux/Unix!
-    S.O é gambiarra igual esse código de cores!
+    S.O é gambiarra igual esse código de cores!]
+    https://www.ime.usp.br/~pf/algoritmos/aulas/io.html
+
 */
 
 

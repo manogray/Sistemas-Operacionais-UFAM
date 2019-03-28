@@ -109,7 +109,7 @@ void run(char opcao[200]){
         if(*myargs[1] == '>'){
             FILE * arquivo = fopen(myargs[2],"w");
             stdout = arquivo;
-            execl(argumentos[0],argumentos[0],stdout,NULL);
+            execl(argumentos[0],NULL);
         }else if (*myargs[1] == '<'){
             
         }else {
