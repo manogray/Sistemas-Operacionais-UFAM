@@ -14,8 +14,8 @@ typedef struct _rwlock_t {
 
 void rwlock_init(rwlock_t *lock) {
    lock->leitores = 0;
-   sem_init(&lock->lock, 0,1); 
-   sem_init(&lock->escrita,0, 1); 
+   sem_init(&lock->lock, 0,1); //SEMAFORO COMO MUTEX
+   sem_init(&lock->escrita,0, 1); //SEMAFORO COMO MUTEX
 }
 
 int nescritas,counter;
@@ -28,7 +28,6 @@ void *leitor(void *arg) {
    lock.leitores++;
    if(lock.leitores == 1){
       sem_wait(&lock.escrita); //TRAVA ESCRITA
-      printf("Eu travei a escrita porra!\n");
    }
    sem_post(&lock.lock); //DESTRAVA
    
@@ -38,7 +37,6 @@ void *leitor(void *arg) {
    lock.leitores--;
    if(lock.leitores == 0){
       sem_post(&lock.escrita); //DESTRAVA ESCRITA
-      printf("Destravei a escrita\n");
    }
    sem_post(&lock.lock); //DESTRAVA
    printf("Leitor %d leu %d\n", *((int*)arg),local);
@@ -47,11 +45,11 @@ void *leitor(void *arg) {
 void *escritor(void *arg) {
    int i;
    for (i = 0; i < nescritas; i++) {
-      sem_wait(&lock.escrita);
+      sem_wait(&lock.escrita); //TRAVA ESCRITA
       counter++; //Escrita
-      sem_post(&lock.escrita);
-      printf("Escreveu %d\n",counter);
-      usleep(rand()%10000);
+      printf("Escritor %d escreveu %d\n",i,counter);
+      sem_post(&lock.escrita); //DESTRAVA ESCRITA
+      usleep(100);
    }
    printf("Escritor Acabou\n");
    return NULL;
