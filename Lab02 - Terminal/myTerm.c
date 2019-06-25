@@ -13,8 +13,12 @@
 #include <pwd.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "myTermColors.h"
 
 char* isolaComando(char comando[200], char resposta[200]){
@@ -72,6 +76,140 @@ void cd(char opcao[200]){
     if(chdir(opcao) < 0){
         foreground(VERMELHO);
         printf("%s: Diretorio nao encontrado\n",opcao);
+    }
+}
+
+void listAll(char opcao[200]){
+    //LS PADRAO
+    if(strcmp(opcao,"hing") == 0){
+        DIR* refDir = opendir(".");
+        assert(refDir != NULL);
+        struct dirent *diretorio;
+        while((diretorio = readdir(refDir)) != NULL){
+            if(diretorio->d_name[0] != '.'){
+                if((int)diretorio->d_type == 4){
+                    foreground(AZUL);
+                    printf("%s\n",diretorio->d_name);
+                }else {
+                    foreground(BRANCO);
+                    printf("%s\n",diretorio->d_name);
+                }
+            }
+        }
+        closedir(refDir);
+
+    }else{//LS COM ARGUMENTO
+        if(strcmp(opcao,"-l") == 0){
+            DIR* refDir = opendir(".");
+            assert(refDir != NULL);
+            struct dirent *diretorio;
+            struct stat arqStat;
+            while((diretorio = readdir(refDir)) != NULL){
+                if(diretorio->d_name[0] != '.'){
+                    if((int)diretorio->d_type == 4){
+                        foreground(AZUL);
+                        if(stat(diretorio->d_name,&arqStat) < 0){
+                            printf("erro!");
+                            exit(1);
+                        }
+                        printf("%s \t -- Tamanho: %ld bytes | Links: %ld | inode: %ld | ",diretorio->d_name, arqStat.st_size,arqStat.st_nlink,arqStat.st_ino);
+                        printf("d");
+                        printf( (arqStat.st_mode & S_IRUSR) ? "r" : "-");
+                        printf( (arqStat.st_mode & S_IWUSR) ? "w" : "-");
+                        printf( (arqStat.st_mode & S_IXUSR) ? "x" : "-");
+                        printf( (arqStat.st_mode & S_IRGRP) ? "r" : "-");
+                        printf( (arqStat.st_mode & S_IWGRP) ? "w" : "-");
+                        printf( (arqStat.st_mode & S_IXGRP) ? "x" : "-");
+                        printf( (arqStat.st_mode & S_IROTH) ? "r" : "-");
+                        printf( (arqStat.st_mode & S_IWOTH) ? "w" : "-");
+                        printf( (arqStat.st_mode & S_IXOTH) ? "x" : "-");
+                        printf("\n");
+                    }else {
+                        foreground(BRANCO);
+                        if(stat(diretorio->d_name,&arqStat) < 0){
+                            printf("erro!");
+                            exit(1);
+                        }
+                        printf("%s \t -- Tamanho: %ld bytes | Links: %ld | inode: %ld | ",diretorio->d_name, arqStat.st_size,arqStat.st_nlink,arqStat.st_ino);
+                        printf("-");
+                        printf( (arqStat.st_mode & S_IRUSR) ? "r" : "-");
+                        printf( (arqStat.st_mode & S_IWUSR) ? "w" : "-");
+                        printf( (arqStat.st_mode & S_IXUSR) ? "x" : "-");
+                        printf( (arqStat.st_mode & S_IRGRP) ? "r" : "-");
+                        printf( (arqStat.st_mode & S_IWGRP) ? "w" : "-");
+                        printf( (arqStat.st_mode & S_IXGRP) ? "x" : "-");
+                        printf( (arqStat.st_mode & S_IROTH) ? "r" : "-");
+                        printf( (arqStat.st_mode & S_IWOTH) ? "w" : "-");
+                        printf( (arqStat.st_mode & S_IXOTH) ? "x" : "-");
+                        printf("\n");
+                    }
+                }
+            }
+            closedir(refDir);
+        }
+        if((opcao[0] == '-')&&(opcao[1] == 'l')&&(strlen(opcao) > 3)){
+            char dirOpt[200];
+            int cont = 3;
+            int cont2 = 0;
+            while(opcao[cont] != '\0'){
+                dirOpt[cont2] = opcao[cont];
+                cont++;
+                cont2++;
+            }
+            dirOpt[cont2] = '\0';
+
+            DIR* refDir = opendir(dirOpt);
+            //assert(refDir != NULL);
+            if(refDir == NULL){
+                printf("%s",dirOpt);
+                exit(1);
+            }
+            struct dirent *diretorio2;
+            struct stat arqStat2;
+            while((diretorio2 = readdir(refDir)) != NULL){
+                if(diretorio2->d_name[0] != '.'){
+                    if((int)diretorio2->d_type == 4){
+                        foreground(AZUL);
+                        if(stat(diretorio2->d_name,&arqStat2) < 0){
+                            printf("erro no item %s\n",diretorio2->d_name);
+                            exit(1);
+                        }
+                        printf("%s \t -- Tamanho: %ld bytes | Links: %ld | inode: %ld | ",diretorio2->d_name, arqStat2.st_size,arqStat2.st_nlink,arqStat2.st_ino);
+                        printf("d");
+                        printf( (arqStat2.st_mode & S_IRUSR) ? "r" : "-");
+                        printf( (arqStat2.st_mode & S_IWUSR) ? "w" : "-");
+                        printf( (arqStat2.st_mode & S_IXUSR) ? "x" : "-");
+                        printf( (arqStat2.st_mode & S_IRGRP) ? "r" : "-");
+                        printf( (arqStat2.st_mode & S_IWGRP) ? "w" : "-");
+                        printf( (arqStat2.st_mode & S_IXGRP) ? "x" : "-");
+                        printf( (arqStat2.st_mode & S_IROTH) ? "r" : "-");
+                        printf( (arqStat2.st_mode & S_IWOTH) ? "w" : "-");
+                        printf( (arqStat2.st_mode & S_IXOTH) ? "x" : "-");
+                        printf("\n");
+                    }else {
+                        foreground(BRANCO);
+                        if(stat(diretorio2->d_name,&arqStat2) < 0){
+                            printf("erro no item %s\n",diretorio2->d_name);
+                            exit(1);
+                        }
+                        printf("%s \t -- Tamanho: %ld bytes | Links: %ld | inode: %ld | ",diretorio2->d_name, arqStat2.st_size,arqStat2.st_nlink,arqStat2.st_ino);
+                        printf("-");
+                        printf( (arqStat2.st_mode & S_IRUSR) ? "r" : "-");
+                        printf( (arqStat2.st_mode & S_IWUSR) ? "w" : "-");
+                        printf( (arqStat2.st_mode & S_IXUSR) ? "x" : "-");
+                        printf( (arqStat2.st_mode & S_IRGRP) ? "r" : "-");
+                        printf( (arqStat2.st_mode & S_IWGRP) ? "w" : "-");
+                        printf( (arqStat2.st_mode & S_IXGRP) ? "x" : "-");
+                        printf( (arqStat2.st_mode & S_IROTH) ? "r" : "-");
+                        printf( (arqStat2.st_mode & S_IWOTH) ? "w" : "-");
+                        printf( (arqStat2.st_mode & S_IXOTH) ? "x" : "-");
+                        printf("\n");
+                    }
+                }
+            }
+            closedir(refDir);
+            
+        }
     }
 }
 
@@ -160,7 +298,7 @@ int main(int argc, char *argv[]){
             }else if (strcmp(comandoIsolado,"pwd") == 0) {
                 pwd(0);
             }else if (strcmp(comandoIsolado,"ls") == 0) {
-                system("ls");
+                listAll(opcao);
             }else if (strcmp(comandoIsolado,"run") == 0){
                 run(opcao);
             }else if (strcmp(comandoIsolado,"exit") == 0){
