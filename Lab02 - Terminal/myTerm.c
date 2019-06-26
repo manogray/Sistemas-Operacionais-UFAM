@@ -141,8 +141,11 @@ int main(int argc, char *argv[]){
     while(strcmp(comandoIsolado,"exit") != 0){
         strcpy(comando,"nothing"); 
         foreground(AZUL);
-        printf("[%s@Computer]",pw->pw_name);
-        
+        printf("[%s",pw->pw_name);
+        foreground(AMARELO);
+        printf("@");
+        foreground(VERMELHO);
+        printf("Computer]");
         foreground(VERDE);
         pwd(1);
 
