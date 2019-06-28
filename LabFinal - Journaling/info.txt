@@ -1,0 +1,1 @@
+NumMagico | TAM | CRC | ID | Consulta | POS | Conta
