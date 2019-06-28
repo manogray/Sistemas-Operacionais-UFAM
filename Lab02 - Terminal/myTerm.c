@@ -1,6 +1,6 @@
 /*
 
-    myTerm
+    myTerm v0.3
 
     Alunos: Evaldo Patrik dos Santos Cardoso - 21453640
             Luis de Gonzaga Mota Pinto Filho - 21753684
