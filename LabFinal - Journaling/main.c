@@ -65,8 +65,29 @@ Tvetor* lerJournal(char* arquivo){
         printf("\nJournal nao encontrado\n");
         exit(1);
     }
+    fclose(arq);
 
     return vect;
+}
+
+void checkpoint(Tvetor* journal){
+    //DADOS
+    FILE* arq = fopen("dados.dat","wb");
+    int contador = 0;
+    if(arq != NULL){
+        
+        while(contador < journal->ocupacao){
+            TJournal* linhaAtual = journal->vetor[contador];
+            fseek(arq,linhaAtual->posicao,SEEK_SET);
+            fwrite(linhaAtual->consulta,sizeof(char)*1000,1,arq);
+
+            contador = contador + 1;
+        }
+    }
+
+    fclose(arq);
+    //CONTA
+    //OFFSET
 }
 
 int main(){
@@ -75,12 +96,9 @@ int main(){
 
     int contador = 0;
 
-    while(contador < journal->ocupacao){
-        TJournal* linhaAtual = journal->vetor[contador];
-        printf("%d - %s\n",linhaAtual->crc,linhaAtual->consulta);
+    checkpoint(journal);
 
-        contador = contador + 1;
-    }
+    printf("parece que deu certo.");
 
     return 0;
 }
