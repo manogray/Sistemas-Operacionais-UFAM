@@ -72,7 +72,7 @@ Tvetor* lerJournal(char* arquivo){
 
 void checkpoint(Tvetor* journal){
     //DADOS
-    FILE* arq = fopen("dados.dat","wb");
+    FILE* arq = fopen("dados.dat","ab");
     int contador = 0;
     if(arq != NULL){
         
@@ -86,8 +86,34 @@ void checkpoint(Tvetor* journal){
     }
 
     fclose(arq);
+    
     //CONTA
-    //OFFSET
+    contador = 0;
+    FILE* arq2 = fopen("conta.dat","ab");
+    if(arq2 != NULL){
+        char* conta = malloc(sizeof(char)*50);
+        while(contador < journal->ocupacao){
+            TJournal* linhaAtual = journal->vetor[contador];
+            
+            fwrite(conta,sizeof(int),1,arq2);
+            contador = contador + 1;
+        }
+    }
+    fclose(arq2);
+
+    //OFFSETS
+    contador = 0;
+    FILE* arq3 = fopen("offsets.dat","ab");
+    if(arq3 != NULL){
+        char offset[50];
+        while(contador < journal->ocupacao){
+            TJournal* linhaAtual = journal->vetor[contador];
+            itoa(linhaAtual->posicao,offset,10);
+            fwrite(offset,sizeof(int),1,arq3);
+            contador = contador + 1;
+        }
+    }
+    fclose(arq3);
 }
 
 int main(){
