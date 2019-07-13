@@ -108,7 +108,7 @@ void checkpoint(Tvetor* journal){
         char offset[50];
         while(contador < journal->ocupacao){
             TJournal* linhaAtual = journal->vetor[contador];
-            itoa(linhaAtual->posicao,offset,10);
+            sprintf(offset,"%d",linhaAtual->posicao);
             fwrite(offset,sizeof(int),1,arq3);
             contador = contador + 1;
         }

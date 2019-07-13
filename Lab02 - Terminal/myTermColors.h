@@ -1,11 +1,3 @@
-/* isto é coisa do demônio!
-    essa desgraça só funciona no Linux/Unix!
-    S.O é gambiarra igual esse código de cores!]
-    https://www.ime.usp.br/~pf/algoritmos/aulas/io.html
-
-*/
-
-
 #ifndef TERMCOR_H
 #define TERMCOR_H
 
@@ -14,15 +6,15 @@
 #define style(style_) style_
 
 /** Cores de Primeiro Plano: Foreground **/
-#define FOREPRETO printf("\033[30m") 
-#define FOREVERMELHO printf("\033[31m") 
-#define FOREVERDE printf("\033[32m") 
-#define FOREAMARELO printf("\033[33m") 
-#define FOREAZUL printf("\033[34m") 
-#define FOREMARGENTA printf("\033[35m") 
-#define FORECIANO printf("\033[36m") 
-#define FOREBRANCO printf("\033[37m") 
-#define FORENORMAL_COR printf("\033[39m") 
+#define FOREPRETO printf("\033[1;30m") 
+#define FOREVERMELHO printf("\033[1;31m") 
+#define FOREVERDE printf("\033[1;32m") 
+#define FOREAMARELO printf("\033[1;33m") 
+#define FOREAZUL printf("\033[1;34m") 
+#define FOREMARGENTA printf("\033[1;35m") 
+#define FORECIANO printf("\033[1;36m") 
+#define FOREBRANCO printf("\033[0;37m") 
+#define FORENORMAL_COR printf("\033[1;39m") 
 
 /**Cores de Fundo: Background **/
 #define BACKPRETO printf("\033[40m") 
@@ -45,4 +37,5 @@
 #define BLINKRAPID printf("\033[6m")
 #define ITALIC printf("\033[3m")
 #define NEGATIVE printf("\033[7m")
+
 #endif /* TERMCOR_H */

@@ -1,9 +1,8 @@
 /*
 
-    myTerm v0.3
+    myTerm v0.4
 
-    Alunos: Evaldo Patrik dos Santos Cardoso - 21453640
-            Luis de Gonzaga Mota Pinto Filho - 21753684
+    Be glateful to: STRNeoh and manogray
 
 */
 
@@ -44,9 +43,15 @@ char* isolaOpcao(char comando[200], char resposta[200], char comandoIsolado[200]
     return resposta;
 }
 
-void pwd(int op){
+void clear(){
+    system("@cls||clear");
+}
+
+void pwd(int op,char user[400]){
     char* diretorioAtual;
+    char buffer[400];
     int i;
+    int j = 0;
 
     diretorioAtual = NULL;
     diretorioAtual = getcwd(diretorioAtual,0);
@@ -63,9 +68,18 @@ void pwd(int op){
         }
         i++;
         while(diretorioAtual[i] != '\0'){
-            printf("%c",diretorioAtual[i]);
+            buffer[j] = diretorioAtual[i];
             i++;
-        }  
+            j++;
+        }
+        buffer[j] = '\0';
+
+        if(strcmp(buffer,user) == 0){
+            printf("~");
+        }else{
+            printf("%s",buffer);
+        }
+
         foreground(VERMELHO);
         printf(" $ ");
         foreground(VERDE);
@@ -215,46 +229,83 @@ void listAll(char opcao[200]){
 
 void run(char opcao[200]){
     int rc = fork();
-    char argumentos[20][200];
+    int contador = 0;
+    int espacosBrancos = 0;
+    int redSaida = 0;
+    int redEntrada = 0;
 
     if(rc < 0){
         printf("forkFail: Nao foi possivel executar o arquivo\n");
         exit(0);
     } else if (rc == 0){/*PROCESSO FILHO*/
-        int i = 0;
-        int j = 0;
-        int aux = 0;
-        while(opcao[i] != '\0'){
-            if(opcao[i] != ' '){
-                argumentos[j][aux] = opcao[i];
-                aux++;
-            }else{
-                argumentos[j][aux] = '\0';
-                j++;
-                aux = 0;
+
+        while(contador < strlen(opcao)){
+            if(opcao[contador] == ' '){ //VERIFICA ESPACOS EM BRANCO
+                espacosBrancos = espacosBrancos + 1;
             }
-            i++;
-        }
-        j++;
-        char *myargs[20];
-        int demo = 0;
-        while(demo < j){
-            myargs[demo] = strdup(argumentos[demo]);
-            demo++;
-        }
-        myargs[demo] = NULL;
 
-        if(*myargs[1] == '>'){
-            FILE * arquivo = fopen(myargs[2],"w");
-            stdout = arquivo;
-            execl(argumentos[0],argumentos[0],stdout,NULL);
-        }else if (*myargs[1] == '<'){
+            if(opcao[contador] == '>'){ //VERIFICA SE TEM >
+                redSaida = 1;
+            }
+
+            if(opcao[contador] == '<'){ //VERIFICA SE TEM <
+                redEntrada = 1;
+            }
+
+            contador++;
+        }
+
+        if(espacosBrancos > 0){//EXECUTA COM ARGUMENTOS
             
-        }else {
+            if(redSaida > 0 && espacosBrancos > 2) {
+                printf("executa com argumentos redirecionando saida\n\n");
+            }else if(redEntrada > 0 && espacosBrancos > 2){
+                printf("executa com argumentos redirecionando entrada\n\n");
+            }else if(redSaida > 0 && espacosBrancos == 2){
+                printf("executa sem argumentos redirecionando saida\n\n");
+            }else if(redEntrada > 0 && espacosBrancos == 2){
+                printf("executa sem argumentos redirecionando entrada\n\n");
+            }else if(redSaida == 0 && redEntrada == 0){
+                //EXECUTA COM ARGUMENTOS
+                char* argumentosReais[20];
+                int cont = 0;
+                while(cont < 20){
+                    argumentosReais[cont] = malloc(sizeof(char)*200);
 
+                    cont++;
+                }
+                int contadorArgumento = 0;
+                int contadorCaracArgumento = 0;
+                contador = 0;
+                
+                while(contador < strlen(opcao)){
+                    if(opcao[contador] != ' '){
+                        argumentosReais[contadorArgumento][contadorCaracArgumento] = opcao[contador];
+                    }else{
+                        argumentosReais[contadorArgumento][contadorCaracArgumento] = '\0';
+                        contadorArgumento = contadorArgumento + 1;
+                        contadorCaracArgumento = -1;
+                    }
+
+                    contador++;
+                    contadorCaracArgumento++;
+                }
+
+                contadorArgumento = contadorArgumento + 1;
+
+                argumentosReais[contadorArgumento] = NULL;
+
+                execv(argumentosReais[0],argumentosReais);
+
+            }
+
+        }else { //EXECUTA SEM ARGUMENTOS
+            char* argumentosTabela[200] = {opcao,NULL};
+            
+            execv(opcao,argumentosTabela);
         }
 
-        //execv(argumentos[0], myargs);
+        exit(0);
 
     } else {/*PROCESSO PAI*/
         int wc = wait(NULL);
@@ -263,7 +314,7 @@ void run(char opcao[200]){
 
 int main(int argc, char *argv[]){
 
-    system("clear");
+    clear();
     setbuf(stdin,NULL);
 
     register struct passwd *pw;
@@ -280,12 +331,10 @@ int main(int argc, char *argv[]){
         strcpy(comando,"nothing"); 
         foreground(AZUL);
         printf("[%s",pw->pw_name);
-        foreground(AMARELO);
         printf("@");
-        foreground(VERMELHO);
         printf("Computer]");
         foreground(VERDE);
-        pwd(1);
+        pwd(1,pw->pw_name);
 
         foreground(BRANCO);
         scanf("%[^\n]s",comando);
@@ -297,16 +346,19 @@ int main(int argc, char *argv[]){
             if(strcmp(comandoIsolado,"cd") == 0){
                 cd(opcao);
             }else if (strcmp(comandoIsolado,"clear") == 0) {
-                system("clear");
+                clear();
             }else if (strcmp(comandoIsolado,"pwd") == 0) {
-                pwd(0);
+                pwd(0,"");
             }else if (strcmp(comandoIsolado,"ls") == 0) {
                 listAll(opcao);
             }else if (strcmp(comandoIsolado,"run") == 0){
                 run(opcao);
+            }else if ( comando[0] == '.' && comando[1] == '/' ){
+                printf("\nPor favor use run <programa>\n");
             }else if (strcmp(comandoIsolado,"exit") == 0){
             }else {
-                printf("%s: Comando nao encontrado\n", comandoIsolado); 
+                //printf("%s: Comando nao encontrado\n", comandoIsolado);
+                system(comando);
             }
         }
     }
